@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Console</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"
+        integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: black;
+            color: lime;
+            font-family: monospace;
+            padding: 10px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 85vh;
+        }
+
+        #console {
+            margin: 0 auto;
+            overflow-y: auto;
+            border: 1px solid lime;
+            padding: 10px;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        #input {
+            background: black;
+            color: lime;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            font-family: monospace;
+            padding: 2px;
+            margin-top: 4px;
+            /* border: 1px solid lime; */
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="console"></div>
+    <input type="text" id="input" autofocus>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            let initLine = 1;
+            const consoleDiv = document.getElementById("console");
+            const input = document.getElementById("input");
+
+            function printToConsole(text) {
+
+                const line = document.createElement("div");
+                const input = document.createElement("span");
+                input.textContent = text;
+                line.textContent = `${initLine++} `;
+                line.appendChild(input);
+                consoleDiv.appendChild(line);
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+
+                input.title = "Click to copy";  // Add tooltip
+                input.addEventListener("click", function copyToClipboard() {
+                    const text = ('' + this.innerText).split(' ').pop();
+                    navigator.clipboard.writeText(text)
+                        .then()
+                        .catch(err => console.error("Error copying text:", err));
+                });
+            }
+
+            input.addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    const command = input.value;
+                    printToConsole("> " + command);
+                    input.value = "";
+                    executeCommand(command);
+                }
+            });
+
+            function executeCommand(command) {
+
+                if (command === "clear") {
+                    initLine = 1;
+                    consoleDiv.innerHTML = "";
+                } else if (command === "random") {
+                    printToConsole(generateRandom());
+                } else if (command.includes("pwd")) {
+                    var arrString = command.split(' ');
+                    var key = arrString.pop();
+                    console.log('key: ', key);
+
+                    fetch("data.json")
+                        .then(response => response.json()) // Parse JSON file
+                        .then(data => {
+                            data.forEach(element => {
+                                printToConsole(`${element.reminder} ${encrypt(key, element.key)}`);
+                            });
+                        })
+                        .catch(error => console.error("Error reading JSON file:", error));
+                } else {
+                    printToConsole("Unknown command: " + command);
+                }
+            }
+
+            function encrypt(key, text) {
+                var encrypted = CryptoJS.AES.encrypt(text, key).toString();
+                return encrypted;
+            }
+
+            function decrypt(key, textEncrypted) {
+                var decrypted = CryptoJS.AES.decrypt(textEncrypted, key).toString(CryptoJS.enc.Utf8);
+                return decrypted;
+            }
+
+            function generateRandom(length = 6) {
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?";
+                let password = "";
+                for (let i = 0; i < length; i++) {
+                    password += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return password;
+            }
+
+            function copyToClipboard() {
+                const text = this.innerText;
+                navigator.clipboard.writeText(text)
+                    .then(() => alert("Copied to clipboard!"))
+                    .catch(err => console.error("Error copying text:", err));
+            }
+
+        });
+    </script>
+</body>
+
+</html>
