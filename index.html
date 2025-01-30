@@ -124,7 +124,13 @@
             }
 
             function encrypt(key, text) {
-                var encrypted = CryptoJS.AES.encrypt(text, key).toString();
+                const iv = CryptoJS.enc.Hex.parse("00000000000000000000000000000000"); // Fixed IV (16 bytes in hex)
+                const encrypted = CryptoJS.AES.encrypt(text, CryptoJS.enc.Utf8.parse(key), {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }).toString();
+
                 return encrypted;
             }
 
