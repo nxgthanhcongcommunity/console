@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -35,7 +35,8 @@
         #console {
             margin: 0 auto;
             overflow-y: auto;
-            border: 1px solid lime;
+            /* border: 1px solid lime; */
+            border: none;
             padding: 10px;
             width: 100%;
             flex-grow: 1;
@@ -51,8 +52,13 @@
             font-family: monospace;
             padding: 2px;
             margin-top: 4px;
-            /* border: 1px solid lime; */
+            /* border-bottom: 1px solid lime; */
             border: none;
+        }
+
+        hr {
+            width: 16px;
+            border-bottom: 1px solid lime;
         }
     </style>
 </head>
@@ -60,6 +66,7 @@
 <body>
     <div id="console"></div>
     <input type="text" id="input" autofocus>
+    <hr />
 
     <script>
 
